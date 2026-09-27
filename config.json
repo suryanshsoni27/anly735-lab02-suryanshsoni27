@@ -1,0 +1,17 @@
+{
+  "base_seed": 20260927,
+  "n_seeds": 30,
+  "pre_steps": 600,
+  "post_steps": 400,
+  "batch_size": 64,
+  "test_size": 4096,
+  "checkpoint_every": 10,
+  "learning_rate": 0.2,
+  "decay_scale": 20,
+  "l2": 0.0001,
+  "early_window": 50,
+  "threshold": 0.9,
+  "threshold_consecutive": 3,
+  "bootstrap_seed": 73502,
+  "bootstrap_resamples": 10000
+}

@@ -1,0 +1,7 @@
+.venv/
+.work/
+__pycache__/
+.quarto/
+.DS_Store
+*_files/
+
