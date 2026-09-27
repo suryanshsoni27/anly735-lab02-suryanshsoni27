@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "review_date": "2026-09-27",
+  "report": "replication-lab.docx",
+  "report_sha256": "7d69ab3e2db2ee2bfc212c8f6b8ecee1f59d0625d4b4902baba4fa8e679e7f8b",
+  "page_count": 6,
+  "pages_visually_inspected": [1, 2, 3, 4, 5, 6],
+  "render_method": "Packaged render_docx.py with bundled LibreOffice; every resulting page PNG inspected",
+  "checks": {
+    "author_and_date_visible": true,
+    "all_template_sections_completed": true,
+    "two_data_tables_complete": true,
+    "two_figures_and_captions_complete": true,
+    "no_clipping_or_overlap": true,
+    "citations_and_references_readable": true,
+    "verdict_matches_proxy_scope": true,
+    "no_em_dashes_in_final_report": true
+  },
+  "repairs_before_final_review": [
+    "Keep data table rows together and set explicit column widths",
+    "Remove Quarto layout wrappers that clipped figures",
+    "Move chart legends away from learning curves",
+    "Correct organization formatting in the course citation"
+  ]
+}

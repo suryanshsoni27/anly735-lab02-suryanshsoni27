@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "checkpoint_rows": 12270,
+  "per_seed_rows": 210,
+  "checks": [
+    "gradient versus finite differences",
+    "complete checkpoint grids and finite metrics",
+    "independent per-seed slopes and recovery",
+    "summary means and standard deviations",
+    "paired bootstrap intervals",
+    "same weights at task switch and restoration baseline",
+    "compatible-label accuracy identity",
+    "rendered DOCX tables match generated evidence",
+    "key narrative values, author, date, and verdict present",
+    "embedded figure hashes match"
+  ],
+  "gradient_max_absolute_error": 1.2497700097036102e-10,
+  "byte_identical_rerun_files": [
+    "learning_curves.csv",
+    "per_seed_metrics.csv",
+    "dataset_manifest.csv",
+    "summary.json"
+  ],
+  "report_sha256": "7d69ab3e2db2ee2bfc212c8f6b8ecee1f59d0625d4b4902baba4fa8e679e7f8b",
+  "evidence_sha256": {
+    "learning_curves.csv": "01f275fad69df60a1b0dbe7dee55d0dc548469bbd01ee84cd378bf5a05820dcd",
+    "per_seed_metrics.csv": "c57ba0dbad83accc63d41133815ec187c968140aadf93a201fac67d8b29db26f",
+    "summary.json": "373da79b85335fe5f4aebc9f217146a2aa0fdacc0a4115c6e04b2adf3be85227"
+  }
+}

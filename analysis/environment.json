@@ -1,0 +1,17 @@
+{
+  "python": "3.13.11",
+  "numpy": "2.5.3",
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "config_sha256": "8ad0feb53f6cab3915594f1d9b9ad58499046b26ee2cfa08d53184f40615113c",
+  "analysis_code_sha256": "ce8eab3057877e1e2263fd4685d27de33206a7dac21b387925fa6660d0b9560b",
+  "rows": 12270,
+  "seeds": 30,
+  "pretraining_step_range": [
+    0,
+    600
+  ],
+  "post_step_range": [
+    0,
+    400
+  ]
+}

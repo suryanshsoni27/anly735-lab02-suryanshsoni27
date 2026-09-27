@@ -1,0 +1,107 @@
+---
+title: "Can the Model Keep Learning"
+subtitle: "ANLY 735 Week 4 Replication Laboratory 2"
+author: "Suryansh Soni"
+date: 2026-09-27
+date-format: "MMMM D, YYYY"
+format:
+  docx:
+    toc: false
+    reference-doc: reference.docx
+bibliography: references.bib
+link-citations: true
+lang: en-US
+---
+
+# Study
+
+**Anchor article:** *Plasticity Loss in Deep Reinforcement Learning: A Survey*, Timo Klein, Lukas Miklautz, Kevin Sidak, Claudia Plant, and Sebastian Tschiatschek (2024), [arXiv:2411.04832v1](https://arxiv.org/abs/2411.04832v1).
+
+**Replication type:** Proxy. **Environment:** Python 3.13.11, NumPy 2.5.3, Matplotlib 3.11.2, and Quarto 1.10.18. **Seeds:** 20260927 through 20260956. **Repository:** [anly735-lab02-suryanshsoni27](https://github.com/suryanshsoni27/anly735-lab02-suryanshsoni27).
+
+The experiment found that two learners with nearly identical initial accuracy adapted very differently after the prediction rule changed. The slower learner recovered when its learning rate was restored. This supports a narrow claim about learning behavior under nonstationarity, while leaving intrinsic neural-network plasticity loss untested.
+
+# 1 Research Claim
+
+The claim I investigate is that strong current performance does not establish an ability to learn efficiently after conditions change. Klein et al. distinguish fitting new targets from retaining old capabilities and discuss the role of optimization settings in learning capacity [@klein2024, secs. 4 and 7]. My test asks whether two similarly accurate learners develop different adaptation trajectories when the target changes, and whether a learning-rate intervention explains the difference.
+
+The survey reviews multiple experiments rather than presenting one common numerical benchmark. Its evidence includes target fitting and learning behavior relative to fresh models. Here, new-task accuracy, cross-entropy, improvement rate, and time to a fixed threshold measure adaptation. Old-task accuracy measures retention separately. The hypothesis concerns subsequent learning; an immediate accuracy drop is only evidence that the evaluation condition changed.
+
+# 2 Replication Strategy
+
+I use a supervised logistic-regression proxy with one abrupt target change. This isolates learning dynamics without the additional effects of exploration, replay, or changing state visitation in reinforcement learning. Agent A uses a constant learning rate; Agent B uses a rate that decreases throughout training. Both receive the same examples and update budget.
+
+The report follows the course scaffold [@itauma2026]. At the recorded source commit, the linked folder contained a README, a Quarto template, and an empty bibliography, but no executable experiment. The parent repository also had its GitHub template setting disabled. I therefore created a separate repository, cloned it, retained the unchanged course scaffold and attribution, and implemented this proxy there. This is a documented departure from the prescribed template-generation workflow, not a run of instructor-supplied code. The design and configuration were committed before the main experiment.
+
+# 3 Data
+
+All data are synthetic and generated locally. Each observation contains two independent standard-normal predictors, x1 and x2, plus an intercept. Task A assigns label 1 when x1 is nonnegative; Task B instead uses x2. The input distribution is unchanged, so the intervention changes the conditional target rule rather than the feature distribution. There is no label noise, scaling, imputation, or feature selection.
+
+Each of 30 independent seeds supplies 38,400 training observations before the change and 25,600 afterward, in batches of 64. A separate random stream generates 4,096 held-out observations per seed. The same held-out inputs are labeled under both rules, allowing paired retention and adaptation checks. They never enter training or model selection. About half the inputs have matching labels under the two rules. This compatible subset distinguishes useful retained behavior from responses that the new task explicitly requires the model to change.
+
+# 4 Method
+
+Both agents are logistic regressions initialized at zero, trained by mini-batch gradient descent on mean binary cross-entropy with an L2 coefficient of 0.0001 on the two feature weights. The intercept is unpenalized. Agent A uses rate 0.2. Agent B uses 0.2 / (1 + t / 20), where t is the zero-based cumulative update index. Training lasts 600 updates on Task A, followed by 400 on Task B. B's first new-task rate is 0.00645, about 31 times smaller than A's.
+
+At the change, I add three controls: a copy of B whose rate is restored to 0.2, a fresh model with rate 0.2, and a fresh model using B's accumulated schedule. Two additional copies continue learning Task A as stationary controls. All receive matched input batches. The restoration comparison holds B's starting weights, data, and loss fixed.
+
+Evaluation occurs at the change before any new-task update, then every 10 updates. The early learning rate is an ordinary least-squares accuracy slope over checkpoints 0 through 50, expressed in percentage points (pp) per 100 updates. This is a rescaled local slope, not a forecast for the next 100 updates. Recovery is the first checkpoint at or above 90% new-task accuracy confirmed by the next two checkpoints. Non-recovery is censored beyond the 400-update budget. Summaries average seeds; 95% intervals use 10,000 paired bootstrap resamples of seeds. No hyperparameter search or early stopping is used.
+
+{{< pagebreak >}}
+
+# 5 Results
+
+Both agents ended initial training at 99.80% mean old-task accuracy. Evaluating the unchanged weights under Task B reduced mean accuracy to 49.83% for A and 49.88% for B. The informative result comes afterward: A gained 49.98 pp over 400 updates, whereas B gained 12.59 pp (@tbl-main). B continued learning, but much more slowly.
+
+{{< include analysis/main-table.md >}}
+
+The final new-task gap was 37.35 pp, with a paired 95% bootstrap interval of 37.06 to 37.63 pp. The early-slope gap was 51.00 pp per 100 updates (95% interval 50.32 to 51.67). A reached the sustained 90% threshold in every run, with a median of 90 updates and a range of 90 to 100. B reached it in none. These intervals describe variability across the simulated seeds, not uncertainty across real-world learning environments.
+
+![Learning and retention before and after the target change. Panel a evaluates Task A before zero and Task B afterward, so the break at zero changes the evaluation target. Panel b evaluates the old rule and the subset with compatible labels separately. Lines show 30-seed means; narrow shaded bands show pointwise mean plus or minus 1.96 standard errors.](figures/learning_and_retention.png){#fig-retention width=6.5in fig-alt="Agent A recovers rapidly after the target changes while Agent B improves slowly. Agent B retains more old-rule accuracy, but both retain almost all compatible labels."}
+
+The controls explain the gap (@tbl-controls). Restoring B's rate raised its final new-task accuracy to 99.80%, an improvement of 37.34 pp over unchanged B (95% paired interval 37.06 to 37.62). Its median recovery time was 45 updates, the median of runs first reaching the criterion at 40 or 50. Both fresh controls reached 90% by the first 10-update checkpoint in every run.
+
+{{< include analysis/control-table.md >}}
+
+The fresh model with an aged schedule classified well but had higher final cross-entropy than the fresh constant-rate model: 0.489 versus 0.128. Accuracy alone therefore misses differences in probability fitting. Stationary A and B maintained 99.86% and 99.87% old-task accuracy, respectively; the divergence was associated with adapting to the changed rule.
+
+![Matched controls after the change. Restoring B's learning rate restores rapid adaptation. Fresh models learn the boundary quickly even with an aged schedule, although the aged schedule fits probabilities more slowly. Cross-entropy distinguishes that behavior from high classification accuracy. Shading uses the same pointwise standard-error rule as Figure 1.](figures/adaptation_controls.png){#fig-controls width=6.5in fig-alt="Five new-task trajectories show that rate-restored B and both fresh models outperform unchanged B. The fresh aged model has high accuracy but worse cross-entropy than the fresh constant-rate model."}
+
+# 6 Compare and Diagnose
+
+The direction of the main comparison matches the survey's distinction between present competence and subsequent learning capacity: equally accurate predictors need not adapt equally quickly [@klein2024]. However, this proxy does not establish the survey's deep-network mechanisms. It has no hidden units, learned representation hierarchy, reinforcement-learning policy, or repeated sequence of tasks. There is no defensible survey-wide numerical target against which 99.81% can be judged a successful reproduction.
+
+The controls also narrow the interpretation. B's small improvement is not proof that it cannot learn. Changing only its future learning rate largely removes its deficit. Fresh weights with the aged schedule learn the classification boundary quickly, showing that a low rate is not sufficient by itself to explain poor accuracy. The slowdown reflects the interaction between an accumulated schedule and weights already fitted to a conflicting target. Different starting weight magnitudes also prevent treating A versus B as a pure same-checkpoint rate comparison; B versus restored B supplies that control.
+
+## Stability Plasticity Diagnostic
+
+**Change.** After 600 updates, labels switch from the sign of x1 to the sign of x2. Neither the input distribution nor the stream of available training examples changes across agents. The immediate drop compares two tasks and cannot diagnose plasticity loss.
+
+**Retention.** Immediately after the switch, the old-task accuracy is still 99.80% for both agents because their parameters have not yet changed. After adaptation, B retains 87.40% old-task accuracy, while A retains 49.94%. B therefore preserves more of the previous rule, including responses that are now wrong under Task B.
+
+**New learning.** A reaches 99.81% new-task accuracy and B reaches 62.46%. B's new-task cross-entropy falls from 1.141 to 0.732, confirming learning despite its poorer final accuracy. This is reduced adaptation within a finite budget, not complete cessation of learning.
+
+**Rate.** A's early slope is 54.52 pp per 100 updates, compared with B's 3.51. Sustained 90% performance is reached after a median of 90 updates for A and is not reached by B within 400. The rate-restoration control reaches the same threshold much sooner, which supports a reversible optimization explanation.
+
+**Tradeoff.** A loses 49.86 pp of full old-task accuracy while B loses 12.40 pp. Yet A retains 99.88% accuracy on compatible labels and B retains essentially 100.00%. The old and new rules disagree on about half the inputs, and the model receives no task identifier. One prediction cannot satisfy both labels there. Thus, much of the apparent forgetting is a necessary response to conflicting targets; these results do not show substantial loss of behavior still useful under both tasks.
+
+# 7 Reproducibility Check
+
+The repository contains the complete generator and learning code, fixed configuration, pinned analysis dependencies, per-seed data fingerprints, every evaluation checkpoint, generated tables and figures, Quarto source, and Word report. A clean rerun reproduces the numerical evidence. Independent checks recalculate the slopes, recovery times, summaries, and paired intervals from the checkpoint CSV; check gradients against finite differences; and compare the report's numbers and embedded figures with their evidence files.
+
+All nine course checklist items are addressed: documented data source, end-to-end execution, environment, packages, versions, seeds, preprocessing, evaluation, and README reproduction instructions. The environment record identifies macOS 26.5 on arm64; reproducibility checks compare numerical outputs directly and retain SHA-256 hashes for audit. Differences across software or hardware remain possible, so the recorded environment is part of the evidence.
+
+The greatest challenge was separating an observed slowdown from a stronger mechanistic claim. The rate-restoration and fresh-model controls make that distinction testable. The unavailable starter code also prevents claiming a direct run of the course experiment. Further limits are the noiseless linear tasks, one change, fixed training budget, and overlapping evaluation sets across checkpoints. The narrow seed intervals should not be mistaken for broad external validity. Codex assisted with implementing the experiment, preparing the report, and executing verification; the repository preserves the code and outputs for inspection.
+
+# 8 Extend
+
+The next experiment would test whether the adaptation deficit survives after the learning schedule is controlled in a nonlinear network. I would replace logistic regression with a small two-layer ReLU network, keep a constant learning rate in every condition, and vary the amount of prior training before applying a fixed new-task probe. Each pretrained network would be compared with a fresh network receiving the same probe batches and update budget. Repeating this across task sequences and seeds would reveal whether probe learning degrades with experience. Alongside accuracy and loss, I would record gradient norms and inactive-unit fractions. A deficit persisting under matched optimization settings would be stronger evidence for network-level plasticity loss than the reversible schedule effect observed here.
+
+# Replication Verdict
+
+**Partially Reproduced.** The proxy reproduces a narrow behavioral pattern: learners with similar prior performance can retain different amounts of old behavior and learn a changed task at very different rates. Rate restoration explains the observed slowdown in this setting, so the evidence does not establish intrinsic deep-network plasticity loss or reproduce the full Klein et al. survey.
+
+# References
+
+::: {#refs}
+:::
