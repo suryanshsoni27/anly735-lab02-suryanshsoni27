@@ -21,24 +21,32 @@ it does not establish intrinsic neural-network plasticity loss.
 - [Numerical summary](analysis/summary.json) and [verification record](analysis/reproduction_check.json).
 - [Main experiment](code/run_experiment.py) and [fixed design](provenance/design.md).
 
-## Course template provenance and workflow exception
+## Assignment scope and course scaffold
+
+The instructor's clarification specifies a controlled learning experiment built
+from scratch. Klein et al. is a survey, so the replication target is a broader
+stability-plasticity phenomenon rather than an original Klein et al. training
+experiment. This repository follows that scope with actual post-change learning
+trajectories. A summary of the clarification is retained in
+[the assignment scope record](provenance/assignment-clarification.md).
 
 The assignment links to
 [the general course scaffold](https://github.com/ANLY-735-Predictive-AI/anly735-templates/tree/main/replication-lab).
 At source commit `2326687d77e54ddc30ae34367e48cec1a6069027`, the linked directory
-contained only a README, `replication-lab.qmd`, and a bibliography placeholder.
-No executable Lab 2 experiment was present, and the parent repository's
-`is_template` flag was false. The same link was confirmed on the Canvas Lab 2
-assignment. The public course organization did not list a separate Lab 2
-starter at the time of inspection.
+contained a README, `replication-lab.qmd`, and a bibliography placeholder.
+It supplies the report scaffold; the experiment is implemented in this
+repository. The parent repository's `is_template` flag was false. The same
+scaffold link was confirmed on the Canvas Lab 2 assignment.
 
 This repository was therefore created independently under the student's
 account and cloned before analysis. The report scaffold was adapted locally;
-the course repository was never modified. This is **not** a GitHub-generated
-copy of an enabled template and **not** a run of instructor-supplied code.
+the course repository was never modified. The repository setup is an explicit
+departure from the literal **Use this template** step because that GitHub
+feature was disabled. Building the experiment from scratch follows the
+clarified assignment.
 The unchanged scaffold and README are retained in `provenance/`, with source
 status and version information. The original CC BY 4.0 attribution is preserved
-in `LICENSE`. A separate starter, if provided later, would require its own run.
+in `LICENSE`.
 
 The design and main implementation were committed before execution in commit
 `5bb37cb5b70b833f240c2c14faf6164a7e8ac8d9`. No hyperparameter search was performed.
@@ -185,4 +193,5 @@ performance across real-world tasks.
 
 Codex assisted with code, report preparation, and execution of verification.
 All numerical findings are traceable to saved checkpoints. The report discloses
-AI assistance and the unavailable course starter/template-generation path.
+AI assistance. Repository provenance records the scaffold and the unavailable
+GitHub template-generation path separately from the assigned experiment design.

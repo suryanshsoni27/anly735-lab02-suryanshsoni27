@@ -2,7 +2,7 @@
   "status": "PASS",
   "review_date": "2026-09-27",
   "report": "replication-lab.docx",
-  "report_sha256": "7d69ab3e2db2ee2bfc212c8f6b8ecee1f59d0625d4b4902baba4fa8e679e7f8b",
+  "report_sha256": "baa0fd92221181c851fe021999850e1d2c0a74ead3d714dfc31bc3bedefa25c9",
   "page_count": 6,
   "pages_visually_inspected": [1, 2, 3, 4, 5, 6],
   "render_method": "Packaged render_docx.py with bundled LibreOffice; every resulting page PNG inspected",
@@ -14,6 +14,7 @@
     "no_clipping_or_overlap": true,
     "citations_and_references_readable": true,
     "verdict_matches_proxy_scope": true,
+    "from_scratch_experiment_matches_instructor_clarification": true,
     "no_em_dashes_in_final_report": true
   },
   "repairs_before_final_review": [
